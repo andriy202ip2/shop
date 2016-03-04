@@ -1,0 +1,35 @@
+<?php
+
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/**
+ * Description of Categori
+ *
+ * @author Prog1
+ */
+class Categori {
+    //put your code here
+    
+    public $Id, $Name;
+    
+    public function getCategoriById($id) {
+        
+        $db = new SQL_Conect_PDO();        
+        $sql = "SELECT * FROM `categories` WHERE `Id` = :Id LIMIT 1;";
+        
+        $ArrPars['Id'] = $id;        
+
+        $db->SetQuery($sql, $ArrPars);                        
+        $res = $db->GetQueryOne_Class("Categori");
+                        
+        return $res;
+        
+    }
+    
+
+    
+}
