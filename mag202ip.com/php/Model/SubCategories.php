@@ -15,7 +15,7 @@ class SubCategories {
     //put your code here
     
     function getSubCategoriesById($id) {
-        
+                
         $db = new SQL_Conect_PDO();        
         $sql = "SELECT * FROM `sub_categories` WHERE `Id_categori` = :Id "
                 . "ORDER BY `Name` ASC ";
@@ -28,5 +28,31 @@ class SubCategories {
         return $res;
     }
     
+    function getSubCategoriesByIdOrDefalt($id) {
+         
+        settype($id, 'int');
+        if ($id <= 0) {            
+            $res = $this->getSubCategoriesDefalt();
+            return $res;
+        }
+        
+        $res = $this->getSubCategoriesById($id);
+        
+        if (!$res){
+           $res = $this->getSubCategoriesDefalt();
+        }
+        
+        return $res;
+    }
+    
+    function getSubCategoriesDefalt() {
+        
+        $Categori = new Categori();
+        $SubCategoriesId = $Categori->getFirstCategoriId();
+        
+        $res = $this->getSubCategoriesById($SubCategoriesId);
+        
+        return $res;
+    }
     
 }

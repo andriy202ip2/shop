@@ -151,7 +151,7 @@ $(document).ready(function () {
                     EroreAlert(resp, SEL);
                     $("#dialog-message").dialog("open");
                 } else {
-                    $('.dialog-message').find('[name="message"]').html('Categori successfully deleted !');
+                    $('.dialog-message').find('[name="message"]').html('SubCategori successfully deleted !');
                     $("#dialog-message").dialog("open");
                 }
             }
@@ -214,7 +214,7 @@ $(document).ready(function () {
                     EroreAlert(resp, SEL);
                     $("#dialog-message").dialog("open");
                 } else {
-                    $('.dialog-message').find('[name="message"]').html('Categori successfully deleted !');
+                    $('.dialog-message').find('[name="message"]').html('Order successfully deleted !');
                     $("#dialog-message").dialog("open");
                 }
             }
@@ -223,6 +223,100 @@ $(document).ready(function () {
     });
 
     // </editor-fold>
-    //
+    
+    // <editor-fold defaultstate="collapsed" desc="Products">
+
+    $('.delete-product-button').click(function () {
+
+        var SEL = $('.dialog-message');
+
+        var obj = new Object();
+        obj['Id'] = $(this).attr("MyId");
+
+        $.ajax({
+            url: '/Admin/ProductDell/',
+            type: 'POST',
+            data: obj,
+            success: function (resp) {
+
+                var resp = eval('(' + resp + ')');
+
+                if (resp.e != undefined) {
+                    EroreAlert(resp, SEL);
+                    $("#dialog-message").dialog("open");
+                } else {
+                    $('.dialog-message').find('[name="message"]').html('Product successfully deleted !');
+                    $("#dialog-message").dialog("open");
+                }
+            }
+        });
+
+    });
+
+    $('.edit-product-button').click(function () {
+
+        EroreCleaner();
+
+        var SEL = $('.edit-product-data');
+
+        var $arr = ['Id', 'Name', 'Count', 'Prise', 'Description', 'Id_categories', 'Id_sub_categories'];
+        
+        var obj = FormGetData($arr, SEL);
+
+        $.ajax({
+            url: '/Admin/ProductEdit/',
+            type: 'POST',
+            data: obj,
+            success: function (resp) {
+
+                var resp = eval('(' + resp + ')');
+
+                if (resp.e != undefined) {
+                    EroreAlert(resp, SEL);
+                } else {
+
+                    if (obj['Id'] > 0) {
+                        $('.dialog-message').find('[name="message"]').html('Product successfully Edit !');
+                    } else {
+                        $('.dialog-message').find('[name="message"]').html('Product successfully Add !');
+                    }
+                    $("#dialog-message").dialog("open");
+                }
+            }
+        });
+
+    });
+
+    $('.edit-product-data').find('[name=Id_categories]').change(function () {
+        
+        var obj = new Object();
+                
+        obj['Id'] = $(this).val();
+
+        $.ajax({
+            url: '/Admin/getAllSubCategoriesByCatId/',
+            type: 'POST',
+            data: obj,
+            success: function (resp) {
+                
+                $('.edit-product-data').find('[name=Id_sub_categories]').html(resp);
+                //alert();
+            }
+        });
+        
+    });
+
+
+
+
+//
+
+//
+//
+//
+//
+//
+//
+    // </editor-fold> 
 
 });

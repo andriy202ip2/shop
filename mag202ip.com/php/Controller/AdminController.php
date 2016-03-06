@@ -153,6 +153,9 @@ class AdminController extends ControllerBase {
     }
 
     // </editor-fold>
+    // 
+    // 
+    // 
     // <editor-fold defaultstate="collapsed" desc="Categories">
 
     function Categories_Action() {
@@ -236,6 +239,9 @@ class AdminController extends ControllerBase {
     }
 
     // </editor-fold>
+    // 
+    // 
+    // 
     // <editor-fold defaultstate="collapsed" desc="SubCategories">
     function SubCategories_Action() {
         $this->IsAdmin();
@@ -325,6 +331,9 @@ class AdminController extends ControllerBase {
     }
 
     // </editor-fold>   
+    // 
+    // 
+    // 
     // <editor-fold defaultstate="collapsed" desc="Orders">
     function Orders_Action() {
         $this->IsAdmin();
@@ -365,13 +374,157 @@ class AdminController extends ControllerBase {
     }
 
     // </editor-fold>     
-
+    // 
+    // 
+    // 
+    // <editor-fold defaultstate="collapsed" desc="Products">
     function Products_Action() {
         $this->IsAdmin();
 
-        echo 'Products_Action';
-    }
+        if ($this->Id_int < 0) {
+            header('Location: /');
+            exit();
+        }
 
+        $Products = new Products();
+        $res = $Products->getAllProductsJOIN($this->Id_int, $this->MaxRes);
+
+        $res['url'] = '/Admin/Products/';
+
+        //var_dump($res);
+
+        $this->View($res);
+    }
+    
+    function ProductDell_Action() {
+        $this->IsAdmin();
+
+        $F = new F_Help();
+
+        $arr[] = 'Id';
+        if (!$F->IsOllPostSet($arr)) {
+            return;
+        }
+
+        $Admin = new Admin();
+        $Admin->ProductDell($_POST['Id']);
+
+        $res['e'] = F_Help::$E;
+        $res = json_encode($res);
+
+        echo $res;
+    }
+    
+    function ProductInfo_Action() {
+
+        $this->IsAdmin();
+
+        if ($this->Id_int < 0) {
+            header('Location: /');
+            exit();
+        }
+
+        $res = $Product = new Product();
+        if ($this->Id_int > 0) {
+            $res = $Product->getProductInfoById($this->Id_int);
+        }
+        
+        $arr['Product'] = $res;
+
+        $Categories = new Categories();
+        $arr['AllCategories'] = $Categories->GetAllCategories();
+        
+        $SubCategories = new SubCategories();
+        $arr['SubCategories'] = $SubCategories->getSubCategoriesByIdOrDefalt($res->Id_categories);
+        
+        //var_dump($arr['SubCategories']);
+        
+        $this->View($arr);
+    }
+    
+    function ProductEdit_Action() {
+        $this->IsAdmin();
+
+        $arr[] = 'Id';        
+        $arr[] = 'Name';      
+        $arr[] = 'Count';           
+        $arr[] = 'Prise';  
+        $arr[] = 'Description';  
+        
+        $arr[] = 'Id_categories';
+        $arr[] = 'Id_sub_categories';       
+        
+        $F = new F_Help();
+
+        if (!$F->IsOllPostSet($arr)) {
+            return;
+        }
+
+        settype($_POST['Id'], 'int');
+
+        $F->IsStrMinNax($_POST['Name'], 3, 30, 'Name');
+        $F->IsCtypeAlpha($_POST['Name'], 'Name');
+
+        $F->IsNumeric($_POST['Count'], 'Count');
+        $F->IsNumericMin($_POST['Count'], 0, 'Count');
+        
+        $F->IsNumeric($_POST['Prise'], 'Prise');
+        $F->IsNumericMin($_POST['Prise'], 0, 'Prise');
+        
+        $F->IsStrMin($_POST['Description'], 5, 'Description');
+                   
+        if (F_Help::$E == null) {
+            $Categori = new Categori();
+            $Is = $Categori->IsCategori($_POST['Id_categories']);
+            if (!$Is) {
+                F_Help::$E['Id_categories'] = "No sath categories !";
+            }
+        }
+
+        if (F_Help::$E == null) {
+            $SubCategori = new SubCategori();
+            $Is = $SubCategori->IsSubCategoriStrukt($_POST['Id_categories'], $_POST['Id_sub_categories']);
+            if (!$Is) {
+                F_Help::$E['Id_sub_categories'] = "Errore in SubCategorie Strukt !";
+            }
+        }
+        
+        if (F_Help::$E == null) {
+            $Admin = new Admin();
+            $Admin->ProductEditOreAdd($_POST, $_POST['Id']);
+        }
+        
+        $res['e'] = F_Help::$E;
+        $res = json_encode($res);
+
+        //var_dump($_POST);
+        
+        echo $res;
+    }
+    
+    function getAllSubCategoriesByCatId_Action() {
+        
+        $F = new F_Help();
+        
+        $this->IsAdmin();
+        
+        $arr[] = 'Id';        
+
+        if (!$F->IsOllPostSet($arr)) {
+            return;
+        }
+        
+        $SubCategories = new SubCategories();
+        $res = $SubCategories->getSubCategoriesByIdOrDefalt($_POST['Id']);
+        
+        $this->TPL_Base = false;
+        $this->View($res);
+        
+    }
+    
+    // </editor-fold> 
+    
+    
     protected function IsAdmin() {
 
         if (!isset($_SESSION['RightsAccess']) || $_SESSION['RightsAccess'] <= 0) {

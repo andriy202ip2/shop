@@ -287,5 +287,12 @@ class F_Help {
         return $Data;
     }
 
-    //$login = htmlentities($login, ENT_QUOTES, "UTF-8");
+    static public function SafeTegs($str) {
+        
+        $str = htmlentities($str, ENT_QUOTES, "UTF-8");
+        
+        return $str;
+        
+    }
+
 }

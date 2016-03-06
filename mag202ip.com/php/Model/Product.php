@@ -17,7 +17,20 @@ class Product {
     public $Id, $Id_categories, $Id_sub_categories, $Name, $Count, $Description, $Prise;
     
     public $CategoriName, $SubCategoriName;
-    
+ 
+    public function getProductInfoById($Id) {
+        
+        $db = new SQL_Conect_PDO();
+
+        $sql = "SELECT * FROM `products` WHERE `Id` = :id LIMIT 1;";
+
+        $ArrPars['id'] = $Id;
+
+        $db->SetQuery($sql, $ArrPars);
+        $res = $db->GetQueryOne_Class("Product");
+        
+        return $res;
+    }
     
     
 }

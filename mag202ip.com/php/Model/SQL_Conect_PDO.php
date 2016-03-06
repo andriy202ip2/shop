@@ -80,12 +80,18 @@ class SQL_Conect_PDO {
         return $res;
     }
 
-    function GetQueryCount() {
+    function GetQueryOneAssoc() {
 
         $res = $this->Query->fetch(PDO::FETCH_NUM);
 
         $this->PDO_Erore($res);
 
+        return $res;
+    }
+    
+    function GetQueryCount() {
+
+        $res = $this->GetQueryOneAssoc();
         return $res[0];
     }
 

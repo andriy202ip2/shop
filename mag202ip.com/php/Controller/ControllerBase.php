@@ -59,6 +59,7 @@ class ControllerBase {
         $var = ucfirst($this->Action).'_Action';
         if (method_exists ( $this , $var )) {
             
+            $this -> SetActionInOllOs();
             $this -> $var();          
             
         } else {
@@ -67,8 +68,7 @@ class ControllerBase {
         }
         
     }
-    
-    
+        
     function View($Args = null){
         
         
@@ -77,10 +77,14 @@ class ControllerBase {
         } else {
             $Action = $this->Action;
         }       
-        
+    
         $controller = str_replace("Controller", "", $this->Controler);
         $url = View_DIR.$controller.'/'.$Action.'.php';
-        if (file_exists($url)) {
+        
+        //echo $url;
+        
+        //file_exists
+        if (is_file($url)) {
             
             ob_start();                
             require $url;
@@ -105,11 +109,25 @@ class ControllerBase {
         
     }
             
-    
-    
     function Index_Action() {
         exit();
         //echo 'Index_Action base';
+    }
+    
+    private function SetActionInOllOs() {
+        
+        $methods = get_class_methods($this);
+        
+        $serch = array_flip($methods);
+        $serch = array_change_key_case($serch, CASE_LOWER);
+        $key = $this->Action.'_action';
+        if (array_key_exists($key, $serch)) {
+           
+            $Action = $methods[$serch[$key]];
+            $Action = str_replace("_Action", "", $Action);
+            $this->Action = $Action;
+        }
+                
     }
     
 }

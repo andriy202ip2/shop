@@ -29,6 +29,30 @@ class SubCategori {
         return $res;
         
     }
+    
+    public function IsSubCategoriStrukt($CategoriId, $SubCategoriId) {
+        
+        if ($CategoriId <= 0 || $SubCategoriId <= 0) {
+            return false;
+        }
+        
+        $db = new SQL_Conect_PDO();
+        $sql = "SELECT `Id` FROM `sub_categories` WHERE "
+                . "`Id` = :SubCategoriId "
+                . "AND `Id_categori` = :CategoriId "
+                . "LIMIT 1;";
+
+        $db->SetQuery($sql, array('CategoriId' => $CategoriId, 'SubCategoriId' => $SubCategoriId));
+        $res = $db->GetQueryOne_Class();
+
+        if ($res) {
+            return true;
+        }
+        
+        return false;
+        
+    }
+    
 //, $NameCategori
     //put your code here
 }

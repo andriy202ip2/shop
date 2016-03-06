@@ -54,6 +54,9 @@ class Admin {
     }
 
     // </editor-fold>
+    // 
+    // 
+    // 
     // <editor-fold defaultstate="collapsed" desc="Categories">
 
     function getAllCategories($Page, $MaxRes) {
@@ -130,6 +133,9 @@ class Admin {
     }
 
     // </editor-fold>
+    // 
+    // 
+    // 
     // <editor-fold defaultstate="collapsed" desc="SubCategories">   
     function getAllSubCategories($Page, $MaxRes) {
 
@@ -218,7 +224,9 @@ class Admin {
     }
 
     // </editor-fold>
-    
+    // 
+    // 
+    // 
     // <editor-fold defaultstate="collapsed" desc="Orders"> 
 
     function OrderDell($Id) {
@@ -230,7 +238,65 @@ class Admin {
     }
     
     // </editor-fold>
+    // 
+    // 
+    // 
+    // <editor-fold defaultstate="collapsed" desc="Products">
+
+    function ProductDell($Id) {
+        //var_dump($Id);
+        $db = new SQL_Conect_PDO();
+
+        $sql = "DELETE FROM `orders` WHERE `Id_product` = :Id LIMIT 1;" ;
+        $db->SetQuery($sql, array('Id' => $Id));
+        //Delete orders end
+
+        $sql = "DELETE FROM `products` WHERE `Id` = :Id LIMIT 1;";
+        $db->SetQuery($sql, array('Id' => $Id));
+    }
     
+    function ProductEditOreAdd($arr, $Id) {
+        
+        $db = new SQL_Conect_PDO();
+
+        $F = new F_Help();
+
+        if ($Id > 0) {
+
+            $sql = "UPDATE `products` "
+                    . "SET `Id_categories` = :Id_categories, "
+                    . "`Id_sub_categories` = :Id_sub_categories, "
+                    . "`Name` = :Name, "
+                    . "`Count` = :Count, "
+                    . "`Description` = :Description, "
+                    . "`Prise` = :Prise "
+                    . "WHERE `Id` = :Id "
+                    . "LIMIT 1;";
+
+                
+            $db->SetQuery($sql, array('Id' => $Id, 
+                                      'Name' => $F->strUpFirst($arr['Name']), 
+                                      'Count' => $arr['Count'],
+                                      'Prise' => $arr['Prise'],
+                                      'Description' => $F->SafeTegs($arr['Description']),
+                                      'Id_categories' => $arr['Id_categories'],
+                                      'Id_sub_categories' => $arr['Id_sub_categories']));
+            
+        } else {
+
+            $sql = "INSERT INTO `products` (`Id`, `Id_categories`, `Id_sub_categories`, `Name`, `Count`, `Description`, `Prise`) "
+                                 . "VALUES (NULL, :Id_categories, :Id_sub_categories, :Name, :Count, :Description, :Prise);";
+            
+            $db->SetQuery($sql, array('Name' => $F->strUpFirst($arr['Name']), 
+                                      'Count' => $arr['Count'],
+                                      'Prise' => $arr['Prise'],
+                                      'Description' => $F->SafeTegs($arr['Description']),
+                                      'Id_categories' => $arr['Id_categories'],
+                                      'Id_sub_categories' => $arr['Id_sub_categories']));
+        } 
+        
+    }
+    // </editor-fold> 
     
     
 }

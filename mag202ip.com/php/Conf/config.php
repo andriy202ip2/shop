@@ -15,7 +15,7 @@ define('HTTP_USER_AGENT', getenv('HTTP_USER_AGENT'));
 define('USER_IP', getenv('REMOTE_ADDR'));
 #endregion Constant
 
-define('IsDebag', false);
+define('IsDebag', true);
 if (!IsDebag) {
     error_reporting(0);
 }
@@ -24,9 +24,9 @@ $Charset = 'utf-8';
 
 #region SQL_DATA
 $DbConf['schop']['host'] = 'localhost';
-$DbConf['schop']['db_user'] = '';
+$DbConf['schop']['db_user'] = 'root';
 $DbConf['schop']['db_password'] = '';
-$DbConf['schop']['db_name'] = '';
+$DbConf['schop']['db_name'] = 'itmax14_schop';
 $DbConf['schop']['db_encode'] = 'utf8';
 #endregion
 
