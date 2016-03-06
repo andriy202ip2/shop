@@ -27,6 +27,8 @@ foreach ($Products as $val) {
       
 ?>
 
+    <div><img src="/images/shop/<?php echo $val->Id; ?>.jpg" width="300px" class="img-shop" /></div>
+    
     <b class="green">Name:</b> <?php echo $val->Name; ?><br/>
     <b class="green">Description:</b> <?php echo $val->Description; ?><br/>
     <b class="green">Products is:</b> <?php echo $val->Count; ?><br/>

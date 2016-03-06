@@ -4,42 +4,54 @@
  * and open the template in the editor.
  */
 
-    var FormGetData = function FormGetData($arr, SEL) {
+/*
+ var imgError = function imgError(image) {
+ image.onerror = "";
+ image.src = "/images/no_image.gif";
+ return true;
+ }*/
 
-        var obj = new Object();
 
-        $.each($arr, function (key, value) {
-            obj[value] = SEL.find('[name=' + value + ']').val();
-        });
+var FormGetData = function FormGetData($arr, SEL) {
 
-        return obj;
+    var obj = new Object();
 
-        /*
-         var obj = new Object();                             
-         obj['Email'] = SEL.find('[name=Email]').val();
-         obj['Pass'] = SEL.find('[name=Pass]').val();
-         obj['g-recaptcha-response'] = SEL.find('[name=g-recaptcha-response]').val();
-         */
-    };
+    $.each($arr, function (key, value) {
+        obj[value] = SEL.find('[name=' + value + ']').val();
+    });
 
-    var EroreCleaner = function EroreCleaner() {
+    return obj;
 
-        $('.E').each(function (index) {
-            $(this).html('');
-        });
-    };
+    /*
+     var obj = new Object();                             
+     obj['Email'] = SEL.find('[name=Email]').val();
+     obj['Pass'] = SEL.find('[name=Pass]').val();
+     obj['g-recaptcha-response'] = SEL.find('[name=g-recaptcha-response]').val();
+     */
+};
 
-    var EroreAlert = function EroreAlert(resp, SEL) {
+var EroreCleaner = function EroreCleaner() {
 
-        $.each(resp.e, function (key, value) {
-            SEL.find('[for=' + key + ']').find('.E').html('<br/>' + value);
-        });
-    };
+    $('.E').each(function (index) {
+        $(this).html('');
+    });
+};
+
+var EroreAlert = function EroreAlert(resp, SEL) {
+
+    $.each(resp.e, function (key, value) {
+        SEL.find('[for=' + key + ']').find('.E').html('<br/>' + value);
+    });
+};
 
 $(document).ready(function () {
 
-    $('.get-free-test-money-bytton').click(function (){
-        
+    $("img").error(function () {
+        $(this).unbind("error").attr("src", "/images/no_image.gif");
+    });
+
+    $('.get-free-test-money-bytton').click(function () {
+
         EroreCleaner();
 
         var SEL = $('.get-free-test-money');
@@ -65,7 +77,7 @@ $(document).ready(function () {
                 }
             }
         });
-        
+
     });
 
     $('.BuyProduct-button').click(function () {
@@ -109,7 +121,7 @@ $(document).ready(function () {
             effect: "blind",
             duration: 1000
         },
-        close: function( event, ui ) {
+        close: function (event, ui) {
             EroreCleaner();
             $('.dialog-message').find('[name="message"]').html('');
             location.reload();

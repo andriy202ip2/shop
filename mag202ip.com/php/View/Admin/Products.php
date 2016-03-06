@@ -26,6 +26,8 @@ $PagesA = $F->NewPager($Args['Page'], $Args['Pages'], $Args['url']);
     foreach ($Products as $val) {
         ?>
 
+        <div><img src="/images/shop/<?php echo $val->Id; ?>.jpg" width="300px" class="img-shop" /></div>
+    
         <b class="green">Product Id:</b> <?php echo $val->Id; ?><br/>
         <b class="green">Product Id_categories:</b> <?php echo $val->Id_categories; ?><br/>
         <b class="green">Product Id_sub_categories:</b> <?php echo $val->Id_sub_categories; ?><br/>
