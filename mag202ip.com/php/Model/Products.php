@@ -103,18 +103,27 @@ class Products {
         return $res;
     }
     
-    function getAllProductsJOIN($Page, $MaxRes) {
+    function getAllProductsJOIN($Page, $MaxRes, $SqlSearchrArr = null) {
         
         $db = new SQL_Conect_PDO();    
          
-        $sql = "SELECT COUNT(`Id`) FROM `products`";
-        $db->SetQuery($sql);                        
+        $ArrPars = null;
+        $SqlSearchr = '';
+        if ($SqlSearchrArr) {
+            $SqlSearchr = $SqlSearchrArr["s"];
+            $ArrPars = $SqlSearchrArr["d"];
+        }
+        
+        $sql = "SELECT COUNT(`Id`) "
+                . "FROM `products` "
+                .($SqlSearchr ? "WHERE $SqlSearchr" : '');
+        $db->SetQuery($sql, $ArrPars);                        
         $res['Count'] = $db->GetQueryCount();
         
         if (!$res['Count']) {            
             return false;
         }
-        
+                
         //$Page, $MaxPages, $AllRes
         $arr = $db->SqlLimit($Page, $MaxRes, $res['Count']);
         $res['Page'] = $arr['Page'];
@@ -126,10 +135,11 @@ class Products {
                 . "WHERE "
                     . "c.`Id` = p.`Id_categories` "
                     . "AND p.`Id_sub_categories` = s.`Id` "
+                .($SqlSearchr ? "AND p.$SqlSearchr" : '')
                 . "ORDER BY `p`.`Name` ASC  "
                 . $arr["SQL"];
 
-        $db->SetQuery($sql);                        
+        $db->SetQuery($sql, $ArrPars);                        
         $res['Products'] = $db->GetQueryAll_Class("Product");
                         
         return $res;

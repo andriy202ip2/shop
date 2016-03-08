@@ -15,12 +15,24 @@ class Orders {
 
     //put your code here
 
-    function GetUserAllOrdersInfo($IdUser, $Page, $MaxRes) {
-
+    function GetUserAllOrdersInfo($IdUser, $Page, $MaxRes, $SqlSearchrArr = null) {
+        
         $db = new SQL_Conect_PDO();
-
-        $sql = "SELECT COUNT(`Id`) FROM `orders` WHERE `Id_user` = :IdUser";
-        $db->SetQuery($sql, array('IdUser' => $IdUser));
+        
+        $ArrPars = array('IdUser' => $IdUser);
+        
+        $SqlSearchr = '';
+        if ($SqlSearchrArr) {
+            $SqlSearchr = $SqlSearchrArr["s"];
+            $ArrPars = array_merge($SqlSearchrArr["d"], $ArrPars);
+        }
+                
+        $sql = "SELECT COUNT(`Id`) FROM `orders` "
+                . "WHERE `Id_user` = :IdUser "
+                .($SqlSearchr ? "AND $SqlSearchr" : '');
+        
+        
+        $db->SetQuery($sql, $ArrPars);
         $res['Count'] = $db->GetQueryCount();
 
         if (!$res['Count']) {
@@ -32,7 +44,7 @@ class Orders {
         $res['Page'] = $arr['Page'];
         $res['Pages'] = $arr['Pages'];
 
-        $sql = "SELECT o.`Id`, o.`Count`, "
+        $sql = "SELECT o.`Id`, o.`Count`, o.`Id_product`, "
                 . "p.`Name`, p.`Description`, p.`Prise`, "
                 . "c.`Name` as CategoriName,sc.`Name` as SubCategoriName,"
                 . "o.`Count` * p.`Prise` as PriseAll "
@@ -45,10 +57,11 @@ class Orders {
                 . "AND c.`Id` = p.Id_categories "
                 . "AND sc.`Id` = p.`Id_sub_categories` "
                 . "AND o.`Id_user` = :IdUser "
+                .($SqlSearchr ? "AND o.$SqlSearchr" : '')
                 . "ORDER BY `p`.`Name` ASC"
                 . $arr["SQL"];
 
-        $db->SetQuery($sql, array('IdUser' => $IdUser));
+        $db->SetQuery($sql, $ArrPars);
         $res['Orders'] = $db->GetQueryAll_Class("Order");
 
         //var_dump($res);
@@ -56,12 +69,22 @@ class Orders {
         return $res;
     }
 
-    function GetAllOrdersInfo($Page, $MaxRes) {
+    function GetAllOrdersInfo($Page, $MaxRes, $SqlSearchrArr = null) {
         
         $db = new SQL_Conect_PDO();
 
-        $sql = "SELECT COUNT(`Id`) FROM `orders`";
-        $db->SetQuery($sql);
+        $ArrPars = array();
+        $SqlSearchr = '';
+        if ($SqlSearchrArr) {
+            $SqlSearchr = $SqlSearchrArr["s"];
+            $ArrPars = array_merge($SqlSearchrArr["d"], $ArrPars);
+        }
+        
+        $sql = "SELECT COUNT(`Id`) "
+                . "FROM `orders` "
+                .($SqlSearchr ? "WHERE $SqlSearchr" : '');
+        
+        $db->SetQuery($sql, $ArrPars);
         $res['Count'] = $db->GetQueryCount();
 
         if (!$res['Count']) {
@@ -85,10 +108,11 @@ class Orders {
                 . "p.`Id` = o.`Id_product` "
                 . "AND c.`Id` = p.Id_categories "
                 . "AND sc.`Id` = p.`Id_sub_categories` "
+                .($SqlSearchr ? "AND o.$SqlSearchr" : '')
                 . "ORDER BY `p`.`Name` ASC"
                 . $arr["SQL"];
 
-        $db->SetQuery($sql);
+        $db->SetQuery($sql, $ArrPars);
         $res['Orders'] = $db->GetQueryAll_Class("Order");
 
         //var_dump($res);

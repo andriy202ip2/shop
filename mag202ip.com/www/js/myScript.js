@@ -46,6 +46,36 @@ var EroreAlert = function EroreAlert(resp, SEL) {
 
 $(document).ready(function () {
 
+//products-searchr
+//
+//search
+//E
+
+    $('.orders-searchr').find('[name=button]').click(function () {
+
+        var SEL = $('.orders-searchr');
+
+        var obj = new Object();
+        var s = SEL.find('[name=search]').val();
+        var so = SEL.find('[name=option]:checked').val();
+
+        location.assign("/Orders/MyOrders/?s=" + s + "&so=" + so);
+
+    });
+
+    $('.products-searchr').find('[name=button]').click(function () {
+
+        var SEL = $('.products-searchr');
+
+        var obj = new Object();
+        var s = SEL.find('[name=search]').val();
+        var so = SEL.find('[name=option]:checked').val();
+
+        location.assign("/Searchr/ProductsGet/?s=" + s + "&so=" + so);
+
+    });
+
+
     $("img").error(function () {
         $(this).unbind("error").attr("src", "/images/no_image.gif");
     });

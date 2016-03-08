@@ -30,15 +30,38 @@ class AdminController extends ControllerBase {
     function Users_Action() {
         $this->IsAdmin();
 
+        $SqlSearchrArr = '';
+
+        if (isset($_GET['s'])) {
+
+            $Searchr = new Searchr();
+            $so = array('Id', 'Email');
+
+            if (!$Searchr->isProductsSearchrGetOk($so)) {
+                header('Location: /');
+                exit();
+            }
+
+            $db = new SQL_Conect_PDO();
+            $SqlSearchrArr = $db->getValidSqlSearchr($_GET['s'], $_GET['so'], $so, array('Id' => '='));
+
+            if (!$SqlSearchrArr) {
+                F_Help::$E['Searchr'] = 'Invalid search opinion !!!';
+            }
+        }
+
         if ($this->Id_int < 0) {
             header('Location: /');
             exit();
         }
 
-        $Admin = new Admin();
-        $res = $Admin->getAllUsers($this->Id_int, $this->MaxRes);
-
+        if (F_Help::$E == null) {
+            $Admin = new Admin();
+            $res = $Admin->getAllUsers($this->Id_int, $this->MaxRes, $SqlSearchrArr);
+        }
         $res['url'] = '/Admin/Users/';
+        $res['GETurl'] = $this->GETurl;
+        $res['e'] = F_Help::$E;
 
         $this->View($res);
     }
@@ -338,23 +361,46 @@ class AdminController extends ControllerBase {
     function Orders_Action() {
         $this->IsAdmin();
 
+        $SqlSearchrArr = '';
+
+        if (isset($_GET['s'])) {
+
+            $Searchr = new Searchr();
+            $so = array('Id', 'Id_product', 'Id_user');
+
+            if (!$Searchr->isProductsSearchrGetOk($so)) {
+                header('Location: /');
+                exit();
+            }
+
+            $db = new SQL_Conect_PDO();
+            $SqlSearchrArr = $db->getValidSqlSearchr($_GET['s'], $_GET['so'], $so, array('Id' => '=', 'Id_product' => '=', 'Id_user' => '='));
+
+            if (!$SqlSearchrArr) {
+                F_Help::$E['Searchr'] = 'Invalid search opinion !!!';
+            }
+        }
+
         if ($this->Id_int < 0) {
             header('Location: /');
             exit();
         }
 
-        $Orders = new Orders();
-        $res = $Orders->GetAllOrdersInfo($this->Id_int, $this->MaxRes);
+        if (F_Help::$E == null) {
+            $Orders = new Orders();
+            $res = $Orders->GetAllOrdersInfo($this->Id_int, $this->MaxRes, $SqlSearchrArr);
+        }
 
         $res['url'] = '/Admin/Orders/';
-
+        $res['GETurl'] = $this->GETurl;
+        $res['e'] = F_Help::$E;
         //var_dump($res);
 
         $this->View($res);
     }
 
     function OrderDell_Action() {
-        
+
         $this->IsAdmin();
 
         $F = new F_Help();
@@ -381,21 +427,43 @@ class AdminController extends ControllerBase {
     function Products_Action() {
         $this->IsAdmin();
 
+        $SqlSearchrArr = '';
+
+        if (isset($_GET['s'])) {
+
+            $Searchr = new Searchr();
+            $so = array('Id', 'Name', 'Description', 'Prise', 'Count');
+
+            if (!$Searchr->isProductsSearchrGetOk($so)) {
+                header('Location: /');
+                exit();
+            }
+
+            $db = new SQL_Conect_PDO();
+            $SqlSearchrArr = $db->getValidSqlSearchr($_GET['s'], $_GET['so'], $so, array('Id' => '=', 'Prise' => '<=', 'Count' => '>='));
+
+            if (!$SqlSearchrArr) {
+                F_Help::$E['Searchr'] = 'Invalid search opinion !!!';
+            }
+        }
+
         if ($this->Id_int < 0) {
             header('Location: /');
             exit();
         }
 
-        $Products = new Products();
-        $res = $Products->getAllProductsJOIN($this->Id_int, $this->MaxRes);
+        if (F_Help::$E == null) {
+            $Products = new Products();
+            $res = $Products->getAllProductsJOIN($this->Id_int, $this->MaxRes, $SqlSearchrArr);
+        }
 
         $res['url'] = '/Admin/Products/';
-
-        //var_dump($res);
+        $res['GETurl'] = $this->GETurl;
+        $res['e'] = F_Help::$E;
 
         $this->View($res);
     }
-    
+
     function ProductDell_Action() {
         $this->IsAdmin();
 
@@ -414,7 +482,7 @@ class AdminController extends ControllerBase {
 
         echo $res;
     }
-    
+
     function ProductInfo_Action() {
 
         $this->IsAdmin();
@@ -428,32 +496,32 @@ class AdminController extends ControllerBase {
         if ($this->Id_int > 0) {
             $res = $Product->getProductInfoById($this->Id_int);
         }
-        
+
         $arr['Product'] = $res;
 
         $Categories = new Categories();
         $arr['AllCategories'] = $Categories->GetAllCategories();
-        
+
         $SubCategories = new SubCategories();
         $arr['SubCategories'] = $SubCategories->getSubCategoriesByIdOrDefalt($res->Id_categories);
-        
+
         //var_dump($arr['SubCategories']);
-        
+
         $this->View($arr);
     }
-    
+
     function ProductEdit_Action() {
         $this->IsAdmin();
 
-        $arr[] = 'Id';        
-        $arr[] = 'Name';      
-        $arr[] = 'Count';           
-        $arr[] = 'Prise';  
-        $arr[] = 'Description';  
-        
+        $arr[] = 'Id';
+        $arr[] = 'Name';
+        $arr[] = 'Count';
+        $arr[] = 'Prise';
+        $arr[] = 'Description';
+
         $arr[] = 'Id_categories';
-        $arr[] = 'Id_sub_categories';       
-        
+        $arr[] = 'Id_sub_categories';
+
         $F = new F_Help();
 
         if (!$F->IsOllPostSet($arr)) {
@@ -467,12 +535,12 @@ class AdminController extends ControllerBase {
 
         $F->IsNumeric($_POST['Count'], 'Count');
         $F->IsNumericMin($_POST['Count'], 0, 'Count');
-        
+
         $F->IsNumeric($_POST['Prise'], 'Prise');
         $F->IsNumericMin($_POST['Prise'], 0, 'Prise');
-        
+
         $F->IsStrMin($_POST['Description'], 5, 'Description');
-                   
+
         if (F_Help::$E == null) {
             $Categori = new Categori();
             $Is = $Categori->IsCategori($_POST['Id_categories']);
@@ -488,43 +556,42 @@ class AdminController extends ControllerBase {
                 F_Help::$E['Id_sub_categories'] = "Errore in SubCategorie Strukt !";
             }
         }
-        
+
         if (F_Help::$E == null) {
             $Admin = new Admin();
             $Admin->ProductEditOreAdd($_POST, $_POST['Id']);
         }
-        
+
         $res['e'] = F_Help::$E;
         $res = json_encode($res);
 
         //var_dump($_POST);
-        
+
         echo $res;
     }
-    
+
     function getAllSubCategoriesByCatId_Action() {
-        
+
         $F = new F_Help();
-        
+
         $this->IsAdmin();
-        
-        $arr[] = 'Id';        
+
+        $arr[] = 'Id';
 
         if (!$F->IsOllPostSet($arr)) {
             return;
         }
-        
+
         $SubCategories = new SubCategories();
         $res = $SubCategories->getSubCategoriesByIdOrDefalt($_POST['Id']);
-        
+
         $this->TPL_Base = false;
         $this->View($res);
-        
     }
-    
+
     // </editor-fold> 
-    
-    
+
+
     protected function IsAdmin() {
 
         if (!isset($_SESSION['RightsAccess']) || $_SESSION['RightsAccess'] <= 0) {

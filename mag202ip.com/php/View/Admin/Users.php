@@ -1,15 +1,49 @@
 <?php
+if ($Args['e']) {
+    ?>    
+
+    <center>
+        <h2><b class="green">Orders Searchr: </b></h2>
+
+
+        <?php
+        ControllerPartial::Get('Searchr/UsersAdmin/');
+
+        foreach ($Args['e'] as $val) {
+            echo '<b class="red">' . $val . '</b><br/>';
+        }
+        ?>    
+
+    </center>    
+
+    <?php
+} elseif (!isset($Args['Users'])) {
+
+    ControllerPartial::Get('Searchr/UsersAdmin/');
+    ?> 
+
+    <center>
+        <h2><b class="green">Nothing found !!!</b></h2>
+    </center>
+
+    <?php
+//var_dump($Args);
+} else {
 
     //var_dump($Args);
 
     $Users = $Args['Users'];
     $F = new F_Help();  
     
-    $PagesA = $F->NewPager($Args['Page'], $Args['Pages'], $Args['url']);
+    $PagesA = $F->NewPager($Args['Page'], $Args['Pages'], $Args['url'], $Args['GETurl']);
 ?>
 
 <center><h2><b class="green">All Users: </b></h2>
-
+    
+        <?php
+        ControllerPartial::Get('Searchr/UsersAdmin/');
+        ?>
+    
 Users Count: <?php echo $Args['Count']; ?><br/>
 Page: <?php echo $Args['Page']; ?> Pages: <?php echo $Args['Pages']; ?><br/>
 <?php echo $PagesA; ?>
@@ -51,3 +85,7 @@ echo '<br/>'.$PagesA;
 ?>
 
 </div>
+
+<?php
+}
+?>

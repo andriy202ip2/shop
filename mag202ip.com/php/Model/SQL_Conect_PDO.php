@@ -32,8 +32,21 @@ class SQL_Conect_PDO {
         }
     }
 
-    function SetQuery($sql, $ArrPars = array()) {
+    public function Conect_Stop() {
+        self::$dbPDO = NULL;
+        $this->Query_Stop();
+    }
+    
+    function Query_Stop() {
+        $this-> Query = NULL;
+    }
+    
+    function SetQuery($sql, $ArrPars = null) {
 
+        if (!$ArrPars){
+            $ArrPars = array();
+        }
+        
         $this->Query = self::$dbPDO->prepare($sql);
         $this->Query->execute($ArrPars);
         //var_dump($this->Query);
@@ -138,6 +151,34 @@ class SQL_Conect_PDO {
         return $sql;
     }
 
+    function getValidSqlSearchr($str, $fild_name, $arr_valid, $keys_num = null) {
+        
+        $arr_valid = array_flip($arr_valid);
+        if (!array_key_exists($fild_name, $arr_valid)) {
+            return '';
+        }
+        
+        if ($keys_num != null) {
+            
+            if (array_key_exists($fild_name, $keys_num)) {
+                
+                if (!is_numeric($str)) {
+                    return '';
+                }
+                
+                $op = $keys_num[$fild_name];
+                
+                $sql_arr['s'] = "`$fild_name` $op :$fild_name ";
+                $sql_arr['d'][$fild_name] = $str;
+                return $sql_arr;
+            }
+        }
+        
+        $sql_arr['s'] = "`$fild_name` REGEXP(:$fild_name) ";
+        $sql_arr['d'][$fild_name] = '.*'.$str.'.*';
+        return $sql_arr;
+    }
+    
     private function PDO_Erore($res) {
         if (IsDebag) {
             

@@ -10,6 +10,10 @@
 
 <center><h2><b class="green">All Products: </b></h2>
 
+<?php
+    ControllerPartial::Get('Searchr/Products/');
+?>    
+    
 Products Count: <?php echo $Args['Count']; ?><br/>
 Page: <?php echo $Args['Page']; ?> Pages: <?php echo $Args['Pages']; ?><br/>
 <?php echo $PagesA; ?>
@@ -27,6 +31,7 @@ foreach ($Products as $val) {
 ?>
     <div><img src="/images/shop/<?php echo $val->Id; ?>.jpg" width="300px" class="img-shop" /></div>
 
+    <b class="green">Product Id:</b> <?php echo $val->Id; ?><br/>
     <b class="green">Name:</b> <?php echo $val->Name; ?><br/>
     <b class="green">Description:</b> <?php echo $val->Description; ?><br/>
     <b class="green">Products is:</b> <?php echo $val->Count; ?><br/>

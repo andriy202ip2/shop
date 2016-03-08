@@ -15,12 +15,21 @@ class Admin {
 
     //put your code here
     // <editor-fold defaultstate="collapsed" desc="Users">  
-    function getAllUsers($Page, $MaxRes) {
+    function getAllUsers($Page, $MaxRes, $SqlSearchrArr = null) {
 
         $db = new SQL_Conect_PDO();
 
-        $sql = "SELECT COUNT(`Id`) FROM `users`;";
-        $db->SetQuery($sql);
+        $ArrPars = array();
+        $SqlSearchr = '';
+        if ($SqlSearchrArr) {
+            $SqlSearchr = $SqlSearchrArr["s"];
+            $ArrPars = array_merge($SqlSearchrArr["d"], $ArrPars);
+        }
+        
+        $sql = "SELECT COUNT(`Id`) "
+                . "FROM `users` "
+                .($SqlSearchr ? "WHERE $SqlSearchr" : '');
+        $db->SetQuery($sql, $ArrPars);
         $res['Count'] = $db->GetQueryCount();
 
         if (!$res['Count']) {
@@ -33,10 +42,11 @@ class Admin {
         $res['Pages'] = $arr['Pages'];
 
         $sql = "SELECT * FROM `users` "
+                .($SqlSearchr ? "WHERE $SqlSearchr" : '')
                 . "ORDER BY `FirstName` ASC "
                 . $arr["SQL"];
 
-        $db->SetQuery($sql);
+        $db->SetQuery($sql, $ArrPars);
         $res['Users'] = $db->GetQueryAll_Class("User");
 
         return $res;

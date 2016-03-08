@@ -70,6 +70,7 @@ class SetControllers {
         $arr['orders'] = "OrdersController";
         $arr['user'] = "UserController";        
         $arr['admin'] = "AdminController";
+        $arr['searchr'] = "SearchrController";
         
         return $arr;
     }

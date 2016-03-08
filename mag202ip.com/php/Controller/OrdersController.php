@@ -16,7 +16,7 @@ class OrdersController extends ControllerBase {
     //put your code here
 
     public $MaxRes = 1;
-    
+
     function MyOrders_Action() {
 
         if (!isset($_SESSION['Id']) || $this->Id_int < 0) {
@@ -24,17 +24,41 @@ class OrdersController extends ControllerBase {
             header('Location: /');
             exit();
         }
-                
+
+        $SqlSearchrArr = '';
+
+        if (isset($_GET['s'])) {
+
+            $Searchr = new Searchr();
+            $so = array('Id', 'Id_product');
+
+            if (!$Searchr->isProductsSearchrGetOk($so)) {
+                header('Location: /');
+                exit();
+            }
+
+            $db = new SQL_Conect_PDO();
+            $SqlSearchrArr = $db->getValidSqlSearchr($_GET['s'], $_GET['so'], $so, array('Id' => '=', 'Id_product' => '='));
+
+            if (!$SqlSearchrArr) {
+                F_Help::$E['Searchr'] = 'Invalid search opinion !!!';
+            }
+        }
+
         if (User::$User == null) {
             $user = new User();
             $user->setUserBySession();
         }
-
-        $Orders  = new Orders();
-        $res = $Orders->GetUserAllOrdersInfo($_SESSION['Id'], $this->Id_int, $this->MaxRes);
+        
+        if (F_Help::$E == null) {
+            $Orders = new Orders();
+            $res = $Orders->GetUserAllOrdersInfo($_SESSION['Id'], $this->Id_int, $this->MaxRes, $SqlSearchrArr);
+        }
         
         $res['url'] = '/Orders/MyOrders/';
-        
+        $res['GETurl'] = $this->GETurl;
+        $res['e'] = F_Help::$E;
+
         $this->View($res);
     }
 

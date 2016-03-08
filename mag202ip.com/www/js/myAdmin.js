@@ -8,6 +8,19 @@
 $(document).ready(function () {
 
     // <editor-fold defaultstate="collapsed" desc="Users">
+    
+    $('.users-admin-searchr').find('[name=button]').click(function () {
+
+        var SEL = $('.users-admin-searchr');
+
+        var obj = new Object();
+        var s = SEL.find('[name=search]').val();
+        var so = SEL.find('[name=option]:checked').val();
+
+        location.assign("/Admin/Users/?s=" + s + "&so=" + so);
+
+    });
+    
     $('.delete-user-button').click(function () {
 
         var SEL = $('.dialog-message');
@@ -195,6 +208,19 @@ $(document).ready(function () {
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="Orders">  
+    
+    $('.orders-admin-searchr').find('[name=button]').click(function () {
+
+        var SEL = $('.orders-admin-searchr');
+
+        var obj = new Object();
+        var s = SEL.find('[name=search]').val();
+        var so = SEL.find('[name=option]:checked').val();
+
+        location.assign("/Admin/Orders/?s=" + s + "&so=" + so);
+
+    });
+    
     $('.delete-order-button').click(function () {
 
         var SEL = $('.dialog-message');
@@ -225,6 +251,18 @@ $(document).ready(function () {
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Products">
+
+    $('.products-admin-searchr').find('[name=button]').click(function () {
+
+        var SEL = $('.products-admin-searchr');
+
+        var obj = new Object();
+        var s = SEL.find('[name=search]').val();
+        var so = SEL.find('[name=option]:checked').val();
+
+        location.assign("/Admin/Products/?s=" + s + "&so=" + so);
+
+    });
 
     $('.delete-product-button').click(function () {
 

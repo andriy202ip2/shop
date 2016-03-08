@@ -26,8 +26,13 @@ class ControllerBase {
     public $Id2;
     public $Id2_int;
     
+    public $AllowingGET = array('s', 'so', 'ob', 'o');
+    public $GETurl;
+            
     function ControllerBase($arrParam = null){
-                
+          
+        $this->setAllowingGET();
+        
         if ($arrParam != null) {
                  
             for ($i = 0; $i < 4; $i++) {
@@ -129,5 +134,28 @@ class ControllerBase {
         }
                 
     }
+    
+    private function setAllowingGET() {
+        
+        $this->GETurl = "";
+        foreach ($_GET as $key => $val) {
+            if (!in_array($key, $this->AllowingGET) || mb_strlen($val) == 0) {
+                unset ($_GET[$key]);
+            }  else {
+                
+                $_GET[$key] = strip_tags($val);
+                
+                if ($this->GETurl == "") {
+                    
+                    $this->GETurl = "?".$key."=".strip_tags($val);
+                    
+                } else {
+                    
+                    $this->GETurl .= "&".$key."=".strip_tags($val);
+                }
+            }
+        }
+    }
+    
     
 }
